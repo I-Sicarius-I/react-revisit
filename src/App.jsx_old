@@ -1,0 +1,50 @@
+import { useEffect, useState } from 'react'
+import reactLogo from './assets/react.svg'
+import viteLogo from './assets/vite.svg'
+import heroImg from './assets/hero.png'
+import './App.css'
+
+//Class component
+// class ClassComponent extends React.Component
+// {
+//   render(){
+//     return <h2>Class Component</h2>
+//   }
+// }
+
+const Card = ({title}) => {
+  const [hasLiked, setHasLiked] = useState(false);
+  const [count, setCount] = useState(0);
+
+  //Runs everytime 'hasLiked' is changed
+  useEffect(() => {
+    console.log(`${title} has been liked: ${hasLiked}`)
+  }, [hasLiked]);
+
+
+  //Runs only once on creation
+  useEffect(() => {
+    console.log('Card Rendered')
+  }, [])
+
+  return(
+    <div className='card' onClick={() => setCount((prevState) => prevState + 1)}>
+      <h2>{title} <br /> {count || null}</h2>
+
+      <button onClick={() => setHasLiked((prevState) => !prevState)}>
+        {!hasLiked ? "Like" : "Dislike"}
+      </button>
+    </div>
+  )
+}
+const App = () => {
+  return (
+    <div className="card-container">
+      <Card title="Star Wars" rating={5} isCool={true}/>
+      <Card title="Avatar"/>
+      <Card title="The Lion King"/>
+    </div>
+  )
+}
+
+export default App
