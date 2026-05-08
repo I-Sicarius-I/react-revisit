@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useDebounce } from 'react-use'
 import Search from './components/Search'
 import Spinner from './components/Spinner'
 import MovieCard from './components/MovieCard'
@@ -21,9 +22,15 @@ const App = () => {
     const [movieList, setMovieList] = useState([])
     const [errorMessage, setErrorMessage] = useState('')
     const [isLoading, setIsLoading] = useState(false)
+    const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
+
+
+    //delay search for less requests
+    useDebounce(() => setDebouncedSearchTerm(searchTerm), 500, [searchTerm])
 
     useEffect(() => {
-        const fetchMovies = async () => {
+
+        const fetchMovies = async (query = '') => {
             setIsLoading(true)
             setErrorMessage('')
 
@@ -33,7 +40,7 @@ const App = () => {
                 // const sleep = ms => new Promise(r => setTimeout(r, ms))
                 // await sleep(1000)
 
-                const endpoint = `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`
+                const endpoint = query ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}` : `${API_BASE_URL}/discover/movie?sort_by=popularity.desc` 
 
                 const response = await fetch(endpoint, API_OPTIONS);
                 
@@ -62,8 +69,8 @@ const App = () => {
             }
         };
 
-        fetchMovies();
-    }, [])
+        fetchMovies(searchTerm);
+    }, [debouncedSearchTerm])
 
     return (
         <main>
@@ -77,6 +84,8 @@ const App = () => {
                         Find <span className='text-gradient'>Movies</span> You'll Enjoy Without the Hassle
                     </h1>
                 </header>
+
+                <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
 
                 <section className='all-movies'>
 
@@ -99,7 +108,7 @@ const App = () => {
                 </section>
 
 
-                <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
+                
             </div>
         </main>
     )
